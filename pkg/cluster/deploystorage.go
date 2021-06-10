@@ -72,9 +72,7 @@ func (m *manager) ensureResourceGroup(ctx context.Context) error {
 		ManagedBy: to.StringPtr(m.doc.OpenShiftCluster.ID),
 	}
 	if m.env.IsLocalDevelopmentMode() {
-		// TODO: ideally this should be removed, but removing it causes the
-		// purge script to ignore RGs in CI E2E.  Fix that at the same time.
-		group.ManagedBy = nil
+		group.Tags = map[string]*string{"purge": to.StringPtr("true")}
 	}
 
 	// According to https://stackoverflow.microsoft.com/a/245391/62320,
