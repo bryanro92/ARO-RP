@@ -396,6 +396,7 @@ func (g *generator) rpVMSS() *arm.Resource {
 		"databaseAccountName",
 		"keyvaultPrefix",
 		"keyvaultDNSSuffix",
+		"azureCloudName",
 	} {
 		parts = append(parts,
 			fmt.Sprintf("'%s=$(base64 -d <<<'''", strings.ToUpper(variable)),
@@ -518,6 +519,8 @@ cat >/etc/td-agent-bit/td-agent-bit.conf <<'EOF'
 	Match *
 	Port 29230
 EOF
+
+export AZURE_CLOUD_NAME=$AZURECLOUDNAME
 
 az login -i
 az account set -s "$SUBSCRIPTIONID"
@@ -975,9 +978,6 @@ done
 								},
 							},
 						},
-					},
-					SecurityProfile: &mgmtcompute.SecurityProfile{
-						EncryptionAtHost: to.BoolPtr(true),
 					},
 					ExtensionProfile: &mgmtcompute.VirtualMachineScaleSetExtensionProfile{
 						Extensions: &[]mgmtcompute.VirtualMachineScaleSetExtension{

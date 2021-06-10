@@ -20,6 +20,9 @@
         "armClientId": {
             "value": ""
         },
+        "azureCloudName": {
+            "value": ""
+        },
         "billingE2EStorageAccountId": {
             "value": ""
         },
@@ -37,9 +40,6 @@
         },
         "disableCosmosDBFirewall": {
             "value": false
-        },
-        "encryptionAtHost": {
-            "value": ""
         },
         "extraCosmosDBIPs": {
             "value": ""
