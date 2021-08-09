@@ -167,6 +167,7 @@ func (m *manager) generateInstallConfig(ctx context.Context) (*installconfig.Ins
 					Architecture:   types.ArchitectureAMD64,
 				},
 			},
+			FIPS: true,
 			Platform: types.Platform{
 				Azure: &azuretypes.Platform{
 					Region:                   strings.ToLower(m.doc.OpenShiftCluster.Location), // Used in k8s object names, so must pass DNS-1123 validation
