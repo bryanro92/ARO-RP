@@ -100,23 +100,23 @@ func deploy(ctx context.Context, log *logrus.Entry) error {
 		errch <- nil
 	}()
 
-	go func() {
-		err := deployer.DeployGateway(ctx)
-		if err != nil {
-			log.Error(err)
-			errch <- err
-			return
-		}
+	// go func() {
+	// 	err := deployer.DeployGateway(ctx)
+	// 	if err != nil {
+	// 		log.Error(err)
+	// 		errch <- err
+	// 		return
+	// 	}
 
-		err = deployer.UpgradeGateway(ctx)
-		if err != nil {
-			log.Error(err)
-			errch <- err
-			return
-		}
+	// 	err = deployer.UpgradeGateway(ctx)
+	// 	if err != nil {
+	// 		log.Error(err)
+	// 		errch <- err
+	// 		return
+	// 	}
 
-		errch <- nil
-	}()
+	// 	errch <- nil
+	// }()
 
 	var errorOccurred bool
 	for i := 0; i < 2; i++ {

@@ -1,8 +1,8 @@
-FROM registry.access.redhat.com/ubi7/ubi-minimal
+FROM registry.access.redhat.com/ubi7:latest
 ARG VERSION
-RUN echo -e '[td-agent-bit]\nname=td-agent-bit\nbaseurl=https://packages.fluentbit.io/centos/7/$basearch' >/etc/yum.repos.d/td-agent-bit.repo && \
-    rpm --import https://packages.fluentbit.io/fluentbit.key && \
-    microdnf update && \
-    microdnf install td-agent-bit-$VERSION && \
-    microdnf clean all
+RUN echo -e '[td-agent-bit]\nname=td-agent-bit\nbaseurl=https://packages.fluentbit.io/centos/7/$basearch' >/etc/yum.repos.d/td-agent-bit.repo
+RUN rpm --import https://packages.fluentbit.io/fluentbit.key 
+RUN yum update -y
+RUN yum install td-agent-bit-$VERSION -y
+RUN yum clean all -y
 ENTRYPOINT ["/opt/td-agent-bit/bin/td-agent-bit"]
