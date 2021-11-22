@@ -67,6 +67,7 @@ func (g *gateway) handleConnect(w http.ResponseWriter, r *http.Request) {
 
 func (g *gateway) checkReady(w http.ResponseWriter, r *http.Request) {
 	if !g.isReady() {
+		g.log.Error("gateway not ready")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
