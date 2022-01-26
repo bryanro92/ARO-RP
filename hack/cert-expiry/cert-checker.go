@@ -5,11 +5,14 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"crypto/x509"
+	"encoding/pem"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	utillog "github.com/Azure/ARO-RP/pkg/util/log"
 	"github.com/sirupsen/logrus"
@@ -19,12 +22,13 @@ var (
 	certList      []string
 	expiryList    []string
 	certDir       = "secrets"
-	certExtension = ".crt"
+	certExtension = ".pem"
 )
 
 func run(ctx context.Context, l *logrus.Entry) error {
 	certList = walkCerts(ctx, l)
-	return checkCertExpiry(certList)
+	expiryList = checkCertExpiry(ctx, l, certList)
+	return nil
 
 }
 
@@ -44,8 +48,28 @@ func walkCerts(ctx context.Context, l *logrus.Entry) []string {
 	return f
 }
 
-func checkCertExpiry(list []string) error {
-	fmt.Println(certList)
+func checkCertExpiry(ctx context.Context, l *logrus.Entry, list []string) []string {
+	for i := range list {
+		r, err := ioutil.ReadFile(list[i])
+		if err != nil {
+			l.Fatal(err)
+		}
+		block, rest := pem.Decode(r)
+		for block.Type == "PRIVATE KEY" {
+			block, rest = pem.Decode(rest)
+			break
+		}
+		cert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			l.Fatal(err)
+		}
+		daysRemaining := cert.NotAfter.Sub(time.Now()).Hours() / 24
+		if daysRemaining < 30 {
+			expiryList = append(expiryList, cert.Subject.CommonName)
+			l.Warnf("%s expires in %v days", cert.Subject.CommonName, daysRemaining)
+		}
+	}
+	return expiryList
 }
 
 func main() {
