@@ -38,3 +38,13 @@ require (
 	gopkg.in/ini.v1 v1.51.0
 	gopkg.in/yaml.v2 v2.2.4
 )
+
+exclude (
+	// exclude github.com/golang/protobuf < 1.3.2 https://nvd.nist.gov/vuln/detail/CVE-2021-3121
+	github.com/golang/protobuf v1.0.0
+	github.com/golang/protobuf v1.1.1
+	github.com/golang/protobuf v1.2.0
+	github.com/golang/protobuf v1.2.1
+	github.com/golang/protobuf v1.3.0
+	github.com/golang/protobuf v1.3.1
+)

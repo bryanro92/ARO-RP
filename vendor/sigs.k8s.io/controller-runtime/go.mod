@@ -27,3 +27,13 @@ require (
 	k8s.io/utils v0.0.0-20210527160623-6fdb442a123b
 	sigs.k8s.io/yaml v1.2.0
 )
+
+exclude (
+	// exclude github.com/golang/protobuf < 1.3.2 https://nvd.nist.gov/vuln/detail/CVE-2021-3121
+	github.com/golang/protobuf v1.0.0
+	github.com/golang/protobuf v1.1.1
+	github.com/golang/protobuf v1.2.0
+	github.com/golang/protobuf v1.2.1
+	github.com/golang/protobuf v1.3.0
+	github.com/golang/protobuf v1.3.1
+)
