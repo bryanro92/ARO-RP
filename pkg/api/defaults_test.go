@@ -126,6 +126,17 @@ func TestSetDefaults(t *testing.T) {
 				base.OpenShiftCluster.Properties.OperatorFlags = OperatorFlags{}
 			},
 		},
+		{
+			name: "only 1 flag defined - add missing flags",
+			want: func() *OpenShiftClusterDocument {
+				return validOpenShiftClusterDocument()
+			},
+			input: func(base *OpenShiftClusterDocument) {
+				base.OpenShiftCluster.Properties.OperatorFlags = OperatorFlags{
+					"aro.alertwebhook.enabled": "true",
+				}
+			},
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			doc := validOpenShiftClusterDocument()
