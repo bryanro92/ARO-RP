@@ -1,5 +1,7 @@
 package api
 
+import "fmt"
+
 // Copyright (c) Microsoft Corporation.
 // Licensed under the Apache License 2.0.
 
@@ -39,7 +41,17 @@ func SetDefaults(doc *OpenShiftClusterDocument) {
 		// If there's no operator flags, set the default ones
 		if doc.OpenShiftCluster.Properties.OperatorFlags == nil {
 			doc.OpenShiftCluster.Properties.OperatorFlags = DefaultOperatorFlags()
+			fmt.Println("length:", len(doc.OpenShiftCluster.Properties.OperatorFlags))
 		}
+
+		// If we are missing operator flags, set the default ones
+		for flag, value := range DefaultOperatorFlags() {
+			_, ok := doc.OpenShiftCluster.Properties.OperatorFlags[flag]
+			if !ok {
+				doc.OpenShiftCluster.Properties.OperatorFlags[flag] = value
+			}
+		}
+
 	}
 }
 
@@ -58,6 +70,7 @@ func DefaultOperatorFlags() OperatorFlags {
 	// Maybe into a subpackage like `github.com/Azure/ARO-RP/pkg/api/defaults`?
 	return OperatorFlags{
 		"aro.alertwebhook.enabled":                 flagTrue,
+		"aro.autosizednodes.enable":                flagFalse,
 		"aro.azuresubnets.enabled":                 flagTrue,
 		"aro.azuresubnets.nsg.managed":             flagTrue,
 		"aro.azuresubnets.serviceendpoint.managed": flagTrue,
@@ -76,6 +89,5 @@ func DefaultOperatorFlags() OperatorFlags {
 		"aro.routefix.enabled":                     flagTrue,
 		"aro.storageaccounts.enabled":              flagTrue,
 		"aro.workaround.enabled":                   flagTrue,
-		"aro.autosizednodes.enable":                flagFalse,
 	}
 }

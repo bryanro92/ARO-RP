@@ -116,17 +116,6 @@ func TestSetDefaults(t *testing.T) {
 			},
 		},
 		{
-			name: "preserve flags",
-			want: func() *OpenShiftClusterDocument {
-				doc := validOpenShiftClusterDocument()
-				doc.OpenShiftCluster.Properties.OperatorFlags = OperatorFlags{}
-				return doc
-			},
-			input: func(base *OpenShiftClusterDocument) {
-				base.OpenShiftCluster.Properties.OperatorFlags = OperatorFlags{}
-			},
-		},
-		{
 			name: "only 1 flag defined - add missing flags",
 			want: func() *OpenShiftClusterDocument {
 				return validOpenShiftClusterDocument()
@@ -134,6 +123,19 @@ func TestSetDefaults(t *testing.T) {
 			input: func(base *OpenShiftClusterDocument) {
 				base.OpenShiftCluster.Properties.OperatorFlags = OperatorFlags{
 					"aro.alertwebhook.enabled": "true",
+				}
+			},
+		},
+		{
+			name: "only 1 flag defined - add missing flags, but keep existing flag value",
+			want: func() *OpenShiftClusterDocument {
+				doc := validOpenShiftClusterDocument()
+				doc.OpenShiftCluster.Properties.OperatorFlags["aro.alertwebhook.eanbled"] = "false"
+				return doc
+			},
+			input: func(base *OpenShiftClusterDocument) {
+				base.OpenShiftCluster.Properties.OperatorFlags = OperatorFlags{
+					"aro.alertwebhook.enabled": "false",
 				}
 			},
 		},
