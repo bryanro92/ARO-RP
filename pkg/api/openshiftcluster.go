@@ -128,6 +128,15 @@ type OpenShiftClusterProperties struct {
 
 	IngressProfiles []IngressProfile `json:"ingressProfiles,omitempty"`
 
+
+	// install configs
+	ClusterDeployment ClusterDeploymentProfile
+
+	SyncSet Profile []Syncsets //points to high level name/reference/primary key of a syncset
+	DeploymentLabel []DeploymentLabel
+
+
+
 	// Install is non-nil only when an install is in progress
 	Install *Install `json:"install,omitempty"`
 
