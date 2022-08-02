@@ -12,11 +12,11 @@ import (
 	"github.com/Azure/ARO-RP/pkg/database/cosmosdb"
 )
 
-type ocmClusterDocument struct {
-	c cosmosdb.OpenShiftClusterDocumentClient
+type clusterManagerConfiguration struct {
+	c cosmosdb.ClusterManagerConfigurationDocumentClient
 }
 
-type OCMClusterDocument interface {
+type ClusterManagerConfiguration interface {
 	Create(context.Context, *api.OpenShiftClusterDocument) (*api.OpenShiftClusterDocument, error)
 	Get(context.Context, string) (*api.OpenShiftClusterDocument, error)
 	Patch(context.Context, string, func(*api.OpenShiftClusterDocument) error) (*api.OpenShiftClusterDocument, error)
@@ -24,7 +24,7 @@ type OCMClusterDocument interface {
 	ChangeFeed() cosmosdb.OpenShiftClusterDocumentIterator
 }
 
-func NewOCMClusterDocument(ctx context.Context, isDevelopmentMode bool, dbc cosmosdb.DatabaseClient) (OCMClusterDocument, error) {
+func NewClusterManagerConfiguration(ctx context.Context, isDevelopmentMode bool, dbc cosmosdb.DatabaseClient) (ClusterManagerConfiguration, error) {
 	dbid, err := Name(isDevelopmentMode)
 	if err != nil {
 		return nil, err
@@ -33,15 +33,15 @@ func NewOCMClusterDocument(ctx context.Context, isDevelopmentMode bool, dbc cosm
 	collc := cosmosdb.NewCollectionClient(dbc, dbid)
 
 	documentClient := cosmosdb.NewOpenShiftClusterDocumentClient(collc, collHiveResources)
-	return NewOCMClusterDocumentWithProvidedClient(documentClient), nil
+	return NewClusterManagerConfigurationWithProvidedClient(documentClient), nil
 }
 
-func NewOCMClusterDocumentWithProvidedClient(client cosmosdb.OpenShiftClusterDocumentClient) OCMClusterDocument {
-	return &ocmClusterDocument{c: client}
+func NewClusterManagerConfigurationWithProvidedClient(client cosmosdb.OpenShiftClusterDocumentClient) ClusterManagerConfiguration {
+	return &clusterManagerConfiguration{c: client}
 }
 
 // Only used internally by Patch()
-func (c *ocmClusterDocument) replace(ctx context.Context, doc *api.OpenShiftClusterDocument) (*api.OpenShiftClusterDocument, error) {
+func (c *clusterManagerConfiguration) replace(ctx context.Context, doc *api.OpenShiftClusterDocument) (*api.OpenShiftClusterDocument, error) {
 	if doc.ID != strings.ToLower(doc.ID) {
 		return nil, fmt.Errorf("id %q is not lower case", doc.ID)
 	}
@@ -49,7 +49,7 @@ func (c *ocmClusterDocument) replace(ctx context.Context, doc *api.OpenShiftClus
 	return c.c.Replace(ctx, doc.ID, doc, nil)
 }
 
-func (c *ocmClusterDocument) Create(ctx context.Context, doc *api.OpenShiftClusterDocument) (*api.OpenShiftClusterDocument, error) {
+func (c *clusterManagerConfiguration) Create(ctx context.Context, doc *api.OpenShiftClusterDocument) (*api.OpenShiftClusterDocument, error) {
 	if doc.ID != strings.ToLower(doc.ID) {
 		return nil, fmt.Errorf("id %q is not lower case", doc.ID)
 	}
@@ -57,7 +57,7 @@ func (c *ocmClusterDocument) Create(ctx context.Context, doc *api.OpenShiftClust
 	return c.c.Create(ctx, doc.ID, doc, nil)
 }
 
-func (c *ocmClusterDocument) Get(ctx context.Context, id string) (*api.OpenShiftClusterDocument, error) {
+func (c *clusterManagerConfiguration) Get(ctx context.Context, id string) (*api.OpenShiftClusterDocument, error) {
 	if id != strings.ToLower(id) {
 		return nil, fmt.Errorf("id %q is not lower case", id)
 	}
@@ -65,7 +65,7 @@ func (c *ocmClusterDocument) Get(ctx context.Context, id string) (*api.OpenShift
 	return c.c.Get(ctx, id, id, nil)
 }
 
-func (c *ocmClusterDocument) Patch(ctx context.Context, id string, callback func(*api.OpenShiftClusterDocument) error) (*api.OpenShiftClusterDocument, error) {
+func (c *clusterManagerConfiguration) Patch(ctx context.Context, id string, callback func(*api.OpenShiftClusterDocument) error) (*api.OpenShiftClusterDocument, error) {
 	var doc *api.OpenShiftClusterDocument
 
 	err := cosmosdb.RetryOnPreconditionFailed(func() error {
@@ -86,7 +86,7 @@ func (c *ocmClusterDocument) Patch(ctx context.Context, id string, callback func
 	return doc, err
 }
 
-func (c *ocmClusterDocument) Delete(ctx context.Context, doc *api.OpenShiftClusterDocument) error {
+func (c *clusterManagerConfiguration) Delete(ctx context.Context, doc *api.OpenShiftClusterDocument) error {
 	if doc.ID != strings.ToLower(doc.ID) {
 		return fmt.Errorf("id %q is not lower case", doc.ID)
 	}
@@ -94,6 +94,6 @@ func (c *ocmClusterDocument) Delete(ctx context.Context, doc *api.OpenShiftClust
 	return c.c.Delete(ctx, doc.ID, doc, &cosmosdb.Options{NoETag: true})
 }
 
-func (c *ocmClusterDocument) ChangeFeed() cosmosdb.OpenShiftClusterDocumentIterator {
+func (c *clusterManagerConfiguration) ChangeFeed() cosmosdb.OpenShiftClusterDocumentIterator {
 	return c.c.ChangeFeed(nil)
 }
