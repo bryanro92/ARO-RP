@@ -36,7 +36,7 @@ import (
 
 // TODO this const was put in place to disable the ocm routes
 // once we are ready to begin testing we can remove this bool and related code
-const disableOCMAPI = true
+const disableOCMAPI = false
 
 type statusCodeError int
 

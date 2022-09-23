@@ -4,9 +4,9 @@ package api
 // Licensed under the Apache License 2.0.
 
 type ClusterManagerConfigurationConverter interface {
-	ToExternal(*ClusterManagerConfiguration) (interface{}, error)
-	ToExternalList([]*ClusterManagerConfiguration, string) (interface{}, error)
-	ToInternal(interface{}, *ClusterManagerConfiguration) error
+	ToExternal(*ClusterManagerConfiguration) interface{}
+	ToExternalList([]*ClusterManagerConfiguration, string) interface{}
+	ToInternal(interface{}, *ClusterManagerConfiguration)
 }
 type ClusterManagerConfigurationStaticValidator interface {
 	Static(interface{}, *ClusterManagerConfiguration) error

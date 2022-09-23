@@ -9,12 +9,12 @@ import (
 
 type clusterManagerConfigurationConverter struct{}
 
-func (c clusterManagerConfigurationConverter) ToExternal(ocm *api.ClusterManagerConfiguration) (interface{}, error) {
+func (c clusterManagerConfigurationConverter) ToExternal(ocm *api.ClusterManagerConfiguration) interface{} {
 	out := new(ClusterManagerConfiguration)
 	out.ID = ocm.ID
 	out.Name = ocm.Name
 	out.Properties.Resources = string(ocm.Properties.Resources)
-	return out, nil
+	return out
 }
 
 func (c clusterManagerConfigurationConverter) SyncSetToExternal(ocm *api.SyncSet) interface{} {
@@ -57,26 +57,24 @@ func (c clusterManagerConfigurationConverter) SecretToExternal(ocm *api.Secret) 
 	return out
 }
 
-func (c clusterManagerConfigurationConverter) ToInternal(_ocm interface{}, out *api.ClusterManagerConfiguration) error {
+func (c clusterManagerConfigurationConverter) ToInternal(_ocm interface{}, out *api.ClusterManagerConfiguration) {
 	ocm := _ocm.(*api.ClusterManagerConfiguration)
 	out.ID = ocm.ID
-	return nil
+	out.Name = ocm.Name
+	out.Properties.Resources = ocm.Properties.Resources
 }
 
 // ToExternalList returns a slice of external representations of the internal objects
-func (c clusterManagerConfigurationConverter) ToExternalList(ocms []*api.ClusterManagerConfiguration, nextLink string) (interface{}, error) {
+func (c clusterManagerConfigurationConverter) ToExternalList(ocms []*api.ClusterManagerConfiguration, nextLink string) interface{} {
 	l := &ClusterManagerConfigurationList{
 		ClusterManagerConfigurations: make([]*ClusterManagerConfiguration, 0, len(ocms)),
 		NextLink:                     nextLink,
 	}
 
 	for _, ocm := range ocms {
-		c, err := c.ToExternal(ocm)
-		if err != nil {
-			return nil, err
-		}
+		c := c.ToExternal(ocm)
 		l.ClusterManagerConfigurations = append(l.ClusterManagerConfigurations, c.(*ClusterManagerConfiguration))
 	}
 
-	return l, nil
+	return l
 }

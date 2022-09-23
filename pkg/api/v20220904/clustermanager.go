@@ -28,7 +28,7 @@ type ClusterManagerConfiguration struct {
 }
 
 type ClusterManagerConfigurationProperties struct {
-	Resources interface{} `json:"resources,omitempty"`
+	Resources string `json:"resources,omitempty"`
 }
 
 // SyncSetList represents a list of SyncSets

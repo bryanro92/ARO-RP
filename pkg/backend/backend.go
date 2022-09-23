@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	maxWorkers      = 100
+	maxWorkers      = 00
 	maxDequeueCount = 5
 )
 

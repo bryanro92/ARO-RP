@@ -56,7 +56,7 @@ func (f *frontend) _putOrPatchClusterManagerConfiguration(ctx context.Context, l
 		return nil, err
 	}
 
-	ocp, err := f.dbOpenShiftClusters.Get(ctx, armResource.ParentResource())
+	ocp, err := f.dbOpenShiftClusters.Get(ctx, strings.ToLower(armResource.ParentResource()))
 	if err != nil && !cosmosdb.IsErrorStatusCode(err, http.StatusNotFound) {
 		return nil, err
 	}
@@ -65,16 +65,15 @@ func (f *frontend) _putOrPatchClusterManagerConfiguration(ctx context.Context, l
 		return nil, api.NewCloudError(http.StatusNotFound, api.CloudErrorCodeResourceNotFound, "", "The Resource '%s/%s' under resource group '%s' was not found.", vars["resourceType"], vars["resourceName"], vars["resourceGroupName"])
 	}
 
-	ocmdoc, _ := f.dbClusterManagerConfiguration.Get(ctx, r.URL.Path)
+	ocmdoc, _ := f.dbClusterManagerConfiguration.Get(ctx, strings.ToLower(r.URL.Path))
 	if err != nil && !cosmosdb.IsErrorStatusCode(err, http.StatusNotFound) {
 		return nil, err
 	}
 
 	isCreate := ocmdoc == nil
-	uuid := f.dbClusterManagerConfiguration.NewUUID()
 	if isCreate {
 		ocmdoc = &api.ClusterManagerConfigurationDocument{
-			ID:  uuid,
+			ID:  f.dbClusterManagerConfiguration.NewUUID(),
 			Key: r.URL.Path,
 			ClusterManagerConfiguration: &api.ClusterManagerConfiguration{
 				ID:                originalPath,
@@ -103,18 +102,15 @@ func (f *frontend) _putOrPatchClusterManagerConfiguration(ctx context.Context, l
 
 	ocmdoc.CorrelationData = correlationData
 
+	oldId, oldName, oldSystemData := ocmdoc.ClusterManagerConfiguration.ID, ocmdoc.ClusterManagerConfiguration.Name, ocmdoc.ClusterManagerConfiguration.SystemData
+	converter.ToInternal()
 	f.systemDataClusterManagerEnricher(ocmdoc, systemData)
 	ocmdoc, err = f.dbClusterManagerConfiguration.Update(ctx, ocmdoc)
 	if err != nil {
 		return nil, err
 	}
 
-	var ext interface{}
-	ext, err = converter.ToExternal(ocmdoc.ClusterManagerConfiguration)
-	if err != nil {
-		return nil, err
-	}
-
+	ext := converter.ToExternal(ocmdoc.ClusterManagerConfiguration)
 	b, err := json.MarshalIndent(ext, "", "  ")
 	return b, err
 }

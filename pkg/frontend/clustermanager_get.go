@@ -46,9 +46,6 @@ func (f *frontend) _getClusterManagerConfiguration(ctx context.Context, log *log
 		return nil, api.NewCloudError(http.StatusBadRequest, api.CloudErrorCodeRequestNotAllowed, "", "Request is not allowed on a resource marked for deletion.")
 	}
 
-	ext, err := converter.ToExternal(doc.ClusterManagerConfiguration)
-	if err != nil {
-		return nil, err
-	}
+	ext := converter.ToExternal(doc.ClusterManagerConfiguration)
 	return json.MarshalIndent(ext, "", "    ")
 }
